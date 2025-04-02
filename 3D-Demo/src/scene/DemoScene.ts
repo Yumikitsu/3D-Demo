@@ -1,5 +1,6 @@
-import { PerspectiveCamera, BoxGeometry, Mesh, MeshBasicMaterial, Scene, WebGLRenderer } from "three";
+import { PerspectiveCamera, BoxGeometry, Mesh, MeshBasicMaterial, Scene, WebGLRenderer, MeshPhongMaterial, DirectionalLight } from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { ModelLoader } from "./ModelLoader";
 
 class DemoScene {
   private static _instance = new DemoScene();
@@ -34,10 +35,22 @@ class DemoScene {
     // Camera setup
     const aspectRatio = this._width / this._height;
     this._camera = new PerspectiveCamera(45, aspectRatio, 0.1, 1000);
-    this._camera.position.set(0, 0, 3);
+    this._camera.position.set(0, 0, 30);
+
+    // Directional light
+    const light = new DirectionalLight(0xffffff, 1);
+    light.position.set(2, 2, 2);
+    this._scene.add(light);
 
     // Control the camera with your mouse
     new OrbitControls(this._camera, this._renderer.domElement);
+
+    // Load a model to the scene
+    const model = ModelLoader(this._scene, "/models/CeilingLamp.glb");
+    if(model) {
+      model.scale.set(1, 1, 1);
+      model.position.set(0, 0, 0);
+    }
 
     // Listen to size changes
     window.addEventListener("resize", this.resize, false);
@@ -50,14 +63,6 @@ class DemoScene {
     this._renderer.setSize(this._width, this._height);
     this._camera.aspect = this._width / this._height;
     this._camera.updateProjectionMatrix();
-  }
-
-  // Load a model to render
-  public load = () => {
-    const geometry = new BoxGeometry(1, 1, 1);
-    const material = new MeshBasicMaterial({ color: 0xf0000f });
-    const cube = new Mesh(geometry, material);
-    this._scene.add(cube);
   }
 
   // Render everything in the Three.js scene that the camera can see
