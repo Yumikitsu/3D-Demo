@@ -1,8 +1,9 @@
-import { PerspectiveCamera, Scene, WebGLRenderer, PCFSoftShadowMap, Clock } from "three";
+import { PerspectiveCamera, Scene, WebGLRenderer, PCFSoftShadowMap, Clock, Object3D } from "three";
 import { ModelHandler } from "./ModelHandler";
 import { loadHDRI } from "./HDRI";
 import { setupLights } from "./LightHandler";
 import { MovementHandler } from "./MovementHandler";
+import { extendObject, moveObject, objectSelection } from "./ObjectManipulator";
 
 class DemoScene {
   private static _instance = new DemoScene();
@@ -15,6 +16,8 @@ class DemoScene {
   private camera:PerspectiveCamera;
   private modelHandler:ModelHandler;
   private movementHandler:MovementHandler;
+  private selectedObject:Object3D | null = null;
+  private extendOrMove:number = 0; // 0 = Extend | 1 = Move
 
   // Three.js Scene
   private readonly scene = new Scene();
@@ -73,7 +76,8 @@ class DemoScene {
 
     // Listen to mouse click and movement
     window.addEventListener("click", this.lockPointer);
-    window.addEventListener("mousemove", this.onMouseMove)
+    window.addEventListener("mousedown", this.selectObject);
+    window.addEventListener("mousemove", this.onMouseMove);
   }
 
   // Lock the pointer to the screen
@@ -81,8 +85,16 @@ class DemoScene {
     document.body.requestPointerLock();
   }
 
+  // Select an object
+  private selectObject = () => {
+    if(document.pointerLockElement === document.body) {
+      this.selectedObject = objectSelection(this.modelHandler.models, this.camera);
+      console.log(this.selectedObject);
+    }
+  }
+
   // Handle mouse movements
-  private onMouseMove = (event: MouseEvent) => {
+  private onMouseMove = (event:MouseEvent) => {
     if (document.pointerLockElement === document.body) {
       this.movementHandler.updateCameraRotation(this.camera, event, this.deltaTime);
     }
@@ -95,6 +107,14 @@ class DemoScene {
       case "s": this.movementHandler.moveBackward = true; break;
       case "a": this.movementHandler.moveLeft = true; break;
       case "d": this.movementHandler.moveRight = true; break;
+      case "e": this.extendOrMove = 0; break; // Extend
+      case "m": this.extendOrMove = 1; break; // Move
+      case "ArrowUp": if(this.selectedObject) this.extendOrMove ? moveObject(this.selectedObject, 1, "-X") : extendObject(this.selectedObject, 1.1, "+X"); break;
+      case "ArrowDown": if(this.selectedObject) this.extendOrMove ? moveObject(this.selectedObject, 1, "+X") : extendObject(this.selectedObject, 1.1, "-X"); break;
+      case "ArrowRight": if(this.selectedObject) this.extendOrMove ? moveObject(this.selectedObject, 1, "-Z") : extendObject(this.selectedObject, 1.1, "+Z"); break;
+      case "ArrowLeft": if(this.selectedObject) this.extendOrMove ? moveObject(this.selectedObject, 1, "+Z") : extendObject(this.selectedObject, 1.1, "-Z"); break;
+      case " ": if(this.selectedObject) this.extendOrMove ? moveObject(this.selectedObject, 1, "+Y") : extendObject(this.selectedObject, 1.1, "+Y"); break;
+      case "Shift": if(this.selectedObject) this.extendOrMove ? moveObject(this.selectedObject, 1, "-Y") : extendObject(this.selectedObject, 1.1, "-Y"); break;
     }
   }
 
