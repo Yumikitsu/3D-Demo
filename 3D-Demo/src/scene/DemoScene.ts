@@ -1,6 +1,7 @@
-import { PerspectiveCamera, BoxGeometry, Mesh, MeshBasicMaterial, Scene, WebGLRenderer, MeshPhongMaterial, DirectionalLight } from "three";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
-import { ModelLoader } from "./ModelLoader";
+import { PerspectiveCamera, Scene, WebGLRenderer, AmbientLight } from "three";
+import { OrbitControls, Reflector } from "three/examples/jsm/Addons.js";
+import { ModelHandler } from "./ModelHandler";
+import { applyReflection, loadHDRI } from "./ReflectionHandler";
 
 class DemoScene {
   private static _instance = new DemoScene();
@@ -11,6 +12,8 @@ class DemoScene {
   private _height:number;
   private _renderer: WebGLRenderer;
   private _camera:PerspectiveCamera;
+  private _modelHandler:ModelHandler;
+  private _reflectors:Reflector[] = [];
 
   // Three.js Scene
   private readonly _scene = new Scene();
@@ -34,26 +37,33 @@ class DemoScene {
 
     // Camera setup
     const aspectRatio = this._width / this._height;
-    this._camera = new PerspectiveCamera(45, aspectRatio, 0.1, 1000);
-    this._camera.position.set(0, 0, 30);
+    this._camera = new PerspectiveCamera(90, aspectRatio, 0.01, 1000);
+    this._camera.position.set(9, 4, 0);
 
     // Directional light
-    const light = new DirectionalLight(0xffffff, 1);
+    const light = new AmbientLight(0xffffff, 1);
     light.position.set(2, 2, 2);
     this._scene.add(light);
 
     // Control the camera with your mouse
     new OrbitControls(this._camera, this._renderer.domElement);
 
+    // Add an HDRI to the scene
+    //loadHDRI(this._scene, "/hdri/pretoria_gardens_1k.hdr");
+
     // Load a model to the scene
-    const model = ModelLoader(this._scene, "/models/CeilingLamp.glb");
-    if(model) {
-      model.scale.set(1, 1, 1);
-      model.position.set(0, 0, 0);
-    }
+    this._modelHandler = new ModelHandler;
+    this.loadModelsAndApplyReflection();
 
     // Listen to size changes
     window.addEventListener("resize", this.resize, false);
+  }
+
+  private async loadModelsAndApplyReflection() {
+    await this._modelHandler.loadAllModels(this._scene);
+
+    // Apply reflection to all mirrors
+    this._reflectors = applyReflection(this._modelHandler.models, this._scene);
   }
 
   // Resize the camera and window based on the browser
