@@ -1,7 +1,8 @@
-import { PerspectiveCamera, Scene, WebGLRenderer, AmbientLight } from "three";
+import { PerspectiveCamera, Scene, WebGLRenderer, PCFSoftShadowMap } from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { ModelHandler } from "./ModelHandler";
 import { loadHDRI } from "./HDRI";
+import { setupLights } from "./LightHandler";
 
 class DemoScene {
   private static _instance = new DemoScene();
@@ -25,6 +26,8 @@ class DemoScene {
       alpha: true,
       antialias: true,
     });
+    this._renderer.shadowMap.enabled = true;
+    this._renderer.shadowMap.type = PCFSoftShadowMap;
     this._renderer.setPixelRatio(window.devicePixelRatio);
     this._renderer.setSize(this._width, this._height);
     // Access target HTML element
@@ -39,10 +42,8 @@ class DemoScene {
     this._camera = new PerspectiveCamera(90, aspectRatio, 0.01, 1000);
     this._camera.position.set(8.5, 3, 0);
 
-    // Directional light
-    const light = new AmbientLight(0xffffff, 1);
-    light.position.set(2, 2, 2);
-    this._scene.add(light);
+    // Setup lights
+    setupLights(this._scene);
 
     // Control the camera with your mouse
     new OrbitControls(this._camera, this._renderer.domElement);

@@ -1,4 +1,4 @@
-import { Object3D, Scene } from "three";
+import { Mesh, Object3D, Scene } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 // Class that loads and stores model objects.
@@ -76,6 +76,14 @@ export class ModelHandler {
         path,
         (gltf) => {
           const model = gltf.scene;
+
+          // Apply shadows
+          gltf.scene.traverse((child) => {
+            if (child instanceof Mesh) {
+                child.receiveShadow = true;
+                child.castShadow = true;
+            }
+          })
           scene.add(model);
           console.log(`Model loaded: ${path}`);
           resolve(model);
