@@ -1,7 +1,7 @@
 import { PerspectiveCamera, Scene, WebGLRenderer, AmbientLight } from "three";
-import { OrbitControls, Reflector } from "three/examples/jsm/Addons.js";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { ModelHandler } from "./ModelHandler";
-import { applyReflection, loadHDRI } from "./ReflectionHandler";
+import { loadHDRI } from "./HDRI";
 
 class DemoScene {
   private static _instance = new DemoScene();
@@ -13,7 +13,6 @@ class DemoScene {
   private _renderer: WebGLRenderer;
   private _camera:PerspectiveCamera;
   private _modelHandler:ModelHandler;
-  private _reflectors:Reflector[] = [];
 
   // Three.js Scene
   private readonly _scene = new Scene();
@@ -38,7 +37,7 @@ class DemoScene {
     // Camera setup
     const aspectRatio = this._width / this._height;
     this._camera = new PerspectiveCamera(90, aspectRatio, 0.01, 1000);
-    this._camera.position.set(9, 4, 0);
+    this._camera.position.set(8.5, 3, 0);
 
     // Directional light
     const light = new AmbientLight(0xffffff, 1);
@@ -51,19 +50,16 @@ class DemoScene {
     // Add an HDRI to the scene
     //loadHDRI(this._scene, "/hdri/pretoria_gardens_1k.hdr");
 
-    // Load a model to the scene
+    // Load all models to the scene
     this._modelHandler = new ModelHandler;
-    this.loadModelsAndApplyReflection();
+    this.loadModels();
 
     // Listen to size changes
     window.addEventListener("resize", this.resize, false);
   }
 
-  private async loadModelsAndApplyReflection() {
+  private async loadModels() {
     await this._modelHandler.loadAllModels(this._scene);
-
-    // Apply reflection to all mirrors
-    this._reflectors = applyReflection(this._modelHandler.models, this._scene);
   }
 
   // Resize the camera and window based on the browser
