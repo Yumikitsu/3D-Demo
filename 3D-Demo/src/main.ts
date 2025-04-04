@@ -1,4 +1,10 @@
 import './style.css'
-import DemoScene from "./scene/DemoScene";
+import RoomScene from './scene/RoomScene';
+import BasicScene from './scene/BasicScene';
+import HDRIScene from './scene/HDRIScene';
 
-DemoScene.instance.render();
+RoomScene.instance.render();
+
+//HDRIScene.instance.render();
+
+//BasicScene.instance.render();

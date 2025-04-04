@@ -1,12 +1,11 @@
 import { PerspectiveCamera, Scene, WebGLRenderer, PCFSoftShadowMap, Clock, Object3D } from "three";
 import { ModelHandler } from "./ModelHandler";
-import { loadHDRI } from "./HDRI";
 import { setupLights } from "./LightHandler";
 import { MovementHandler } from "./MovementHandler";
 import { extendObject, moveObject, objectSelection } from "./ObjectManipulator";
 
-class DemoScene {
-  private static _instance = new DemoScene();
+class RoomScene {
+  private static _instance = new RoomScene();
   public static get instance() {
     return this._instance;
   }
@@ -59,9 +58,6 @@ class DemoScene {
 
     // Setup lights
     setupLights(this.scene);
-
-    // Add an HDRI to the scene
-    //loadHDRI(this.scene, "/hdri/pretoria_gardens_1k.hdr");
 
     // Load all models to the scene
     this.modelHandler = new ModelHandler;
@@ -127,7 +123,6 @@ class DemoScene {
       case "d": this.movementHandler.moveRight = false; break;
     }
   }
-  
 
   // Load all models
   private async loadModels() {
@@ -152,4 +147,4 @@ class DemoScene {
   }
 }
 
-export default DemoScene;
+export default RoomScene;

@@ -1,4 +1,4 @@
-import { AmbientLight, Scene, SpotLight } from "three";
+import { AmbientLight, PointLight, Scene, SpotLight } from "three";
 
 export function setupLights(scene:Scene) {
   // Ambient light
@@ -26,4 +26,32 @@ export function setupLights(scene:Scene) {
 
   scene.add(DeskLight);
   scene.add(DeskLight.target);
+}
+
+export function setupBasicLights(scene:Scene) {
+  // Ambient Light
+  const ambLight = new AmbientLight(0xffffff, 0.4);
+  scene.add(ambLight);
+
+  // Point Light
+  const pointLight = new PointLight(0xffffff, 1, 20, 0.1);
+  pointLight.position.set(0, 3, 0);
+  pointLight.castShadow = true;
+  scene.add(pointLight);
+
+  // Spot Light
+  const spotLight = new SpotLight(0xA020F0, 10, 15, Math.PI / 4, 0.5, 0.1);
+  spotLight.position.set(20, 5, 0);
+  spotLight.target.position.set(20, 0, 0);
+  spotLight.castShadow = true;
+  scene.add(spotLight);
+  scene.add(spotLight.target);
+
+  // Spot Light 2
+  const spotLight2 = new SpotLight(0xFFEA00, 5, 15, Math.PI / 4, 0.5, 0.1);
+  spotLight2.position.set(-20, 5, 5);
+  spotLight2.target.position.set(-20, 0, 0);
+  spotLight2.castShadow = true;
+  scene.add(spotLight2);
+  scene.add(spotLight2.target);
 }

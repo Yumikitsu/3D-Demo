@@ -28,9 +28,6 @@ export class ModelHandler {
     "/models/Closet.glb",
     "/models/ClosetDoorL.glb",
     "/models/ClosetDoorR.glb",
-
-    // Mirror
-    //"/models/Mirror.glb",
     
     // Desk + Desk Lamp
     "/models/Desk.glb",
